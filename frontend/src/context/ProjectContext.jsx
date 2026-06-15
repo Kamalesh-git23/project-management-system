@@ -1,52 +1,71 @@
-import React,{createContext, useState, useEffect} from 'react';
+import {
+  createContext,
+  useState,
+  useEffect,
+} from "react";
 
-export const ProjectContext = createContext();
+import projectService from "../services/projectService";
 
-function ProjectProvider({children}) {
-    const [projects, setProjects] = useState(() => {
-        const savedProjects = localStorage.getItem("projects");
-        return savedProjects ? JSON.parse(savedProjects) : [];
-    });
+export const ProjectContext =
+  createContext();
 
-    const [editingProject, setEditingProject] = useState(null);
+export default function ProjectProvider({
+  children,
+}) {
+  const [projects, setProjects] =
+    useState([]);
 
-    useEffect(()=> {
-        localStorage.setItem("projects", JSON.stringify(projects));
-    }, [projects]);
+  const fetchProjects =
+    async () => {
+      const res =
+        await projectService.getProjects();
 
-
-
-    const addProject = (project) => {
-        setProjects(prev => [...prev,project]);
+      setProjects(res.data);
     };
 
-    const updateProject = (id,updatedProject) => {
-        setProjects(prev => 
-            prev.map(project =>
-                project.id === id ? updatedProject : project
-            )
-        );
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const addProject =
+    async (projectData) => {
+      await projectService.createProject(
+        projectData
+      );
+
+      fetchProjects();
     };
 
-    const deleteProject = (id) => {
-        setProjects(prev => 
-            prev.filter(project => project.id !==id)
-        );
+  const editProject =
+    async (id, projectData) => {
+      await projectService.updateProject(
+        id,
+        projectData
+      );
+
+      fetchProjects();
     };
 
+  const removeProject =
+    async (id) => {
+      await projectService.deleteProject(
+        id
+      );
+
+      fetchProjects();
+    };
 
   return (
-    <ProjectContext.Provider 
-        value={{
-            projects,
-            addProject,
-            updateProject,
-            deleteProject,
-            editingProject,
-            setEditingProject}}>
-        {children}
+    <ProjectContext.Provider
+      value={{
+        projects,
+        fetchProjects,
+        addProject,
+        editProject,
+        removeProject,
+      }}
+    >
+      {children}
     </ProjectContext.Provider>
   );
 }
-
-export default ProjectProvider;
