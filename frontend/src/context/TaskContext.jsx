@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import taskService from "../services/taskService";
+import attachmentService from "../services/attachmentService";
 
 export const TaskContext =
   createContext();
@@ -63,6 +64,34 @@ export default function TaskProvider({
       fetchTasks();
     };
 
+  const uploadTaskAttachment = async (
+  taskId,
+  file
+) => {
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  await attachmentService.uploadAttachment(
+    taskId,
+    formData
+  );
+
+  fetchTasks();
+};
+
+const removeAttachment = async (
+  attachmentId
+) => {
+
+  await attachmentService.deleteAttachment(
+    attachmentId
+  );
+
+  fetchTasks();
+};
+
   return (
     <TaskContext.Provider
       value={{
@@ -72,6 +101,8 @@ export default function TaskProvider({
         editTask,
         removeTask,
         moveTask,
+        uploadTaskAttachment,
+        removeAttachment,
       }}
     >
       {children}
