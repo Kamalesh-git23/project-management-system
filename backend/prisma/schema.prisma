@@ -82,9 +82,13 @@ model Attachment {
   id Int @id @default(autoincrement())
 
   fileName String
-  filePath String
+  
+  fileUrl String
+
+  publicId String
 
   taskId Int
+  
   task Task @relation(fields:[taskId], references: [id])
 
   createdAt DateTime @default(now())
