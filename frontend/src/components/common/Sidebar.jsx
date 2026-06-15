@@ -1,29 +1,42 @@
-import React from 'react'
-import { Link } from "react-router-dom";
-import { NavLink } from 'react-router-dom';
-import { MdDashboard } from 'react-icons/md';
-import { FaProjectDiagram, FaTasks, FaPlus } from 'react-icons/fa';
+import React from "react";
+
+import { NavLink } from "react-router-dom";
+
+import {
+  FaProjectDiagram,
+  FaTasks,
+} from "react-icons/fa";
 
 function Sidebar() {
   return (
-    <aside className='sidebar'>
-
-      {/* <NavLink to="/dashboard">
-        <MdDashboard/>
-        Dashboard
-      </NavLink> */}
-
-      <NavLink to="/">
-        <FaProjectDiagram/>
-        Projects
+    <aside className="sidebar">
+      <NavLink
+        to="/projects"
+        className={({ isActive }) =>
+          isActive
+            ? "active-link"
+            : ""
+        }
+      >
+        <FaProjectDiagram />
+        <span>
+          Projects
+        </span>
       </NavLink>
-      
 
-      <NavLink to="/tasks">
-        <FaTasks/>
-        Tasks
+      <NavLink
+        to="/tasks"
+        className={({ isActive }) =>
+          isActive
+            ? "active-link"
+            : ""
+        }
+      >
+        <FaTasks />
+        <span>
+          Tasks
+        </span>
       </NavLink>
-            
     </aside>
   );
 }

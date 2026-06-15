@@ -1,18 +1,52 @@
-import React from 'react'
-import { FaProjectDiagram } from 'react-icons/fa';
+import React from "react";
 
-function Navbar({pageTitle, actionButton}) {
+import { useAuth } from "../../hooks/useAuth";
+
+import { useNavigate } from "react-router-dom";
+
+function Navbar({
+  pageTitle,
+  actionButton,
+}) {
+  const navigate =
+    useNavigate();
+
+  const {
+    user,
+    logout,
+  } = useAuth();
+
+  const handleLogout =
+    () => {
+      logout();
+
+      navigate("/login");
+    };
+
   return (
-    <nav className='navbar'>
-
-      <div className='navbar-left'>
+    <nav className="navbar">
+      <div className="navbar-left">
         <h1>{pageTitle}</h1>
       </div>
 
-      <div className='navbar-right'>
-        <h1>{actionButton}</h1>
+      <div className="navbar-right">
+        {actionButton}
+
+        <div className="user-info">
+          <span>
+            {user?.name}
+          </span>
+
+          <button
+            className="logout-btn"
+            onClick={
+              handleLogout
+            }
+          >
+            Logout
+          </button>
+        </div>
       </div>
-        
     </nav>
   );
 }

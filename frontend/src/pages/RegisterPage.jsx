@@ -7,11 +7,11 @@ import {
 
 import { useAuth } from "../hooks/useAuth";
 
-function LoginPage() {
+function RegisterPage() {
   const navigate =
     useNavigate();
 
-  const { login } =
+  const { register } =
     useAuth();
 
   const [loading, setLoading] =
@@ -19,6 +19,7 @@ function LoginPage() {
 
   const [formData, setFormData] =
     useState({
+      name: "",
       email: "",
       password: "",
     });
@@ -38,7 +39,7 @@ function LoginPage() {
       try {
         setLoading(true);
 
-        await login(formData);
+        await register(formData);
 
         navigate(
           "/projects"
@@ -47,7 +48,7 @@ function LoginPage() {
         alert(
           error.response?.data
             ?.message ||
-            "Login Failed"
+            "Registration Failed"
         );
       } finally {
         setLoading(false);
@@ -55,12 +56,22 @@ function LoginPage() {
     };
 
   return (
-    <div className="login-container">
+    <div className="register-container">
       <form
         className="auth-form"
         onSubmit={handleSubmit}
       >
-        <h2>Login</h2>
+        <h2>Create Account</h2>
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          disabled={loading}
+          required
+        />
 
         <input
           type="email"
@@ -79,6 +90,7 @@ function LoginPage() {
           value={formData.password}
           onChange={handleChange}
           disabled={loading}
+          minLength={6}
           required
         />
 
@@ -87,14 +99,14 @@ function LoginPage() {
           disabled={loading}
         >
           {loading
-            ? "Logging in..."
-            : "Login"}
+            ? "Creating Account..."
+            : "Register"}
         </button>
 
         <p>
-          Don't have an account?{" "}
-          <Link to="/register">
-            Register
+          Already have an account?{" "}
+          <Link to="/login">
+            Login
           </Link>
         </p>
       </form>
@@ -102,4 +114,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;

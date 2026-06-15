@@ -7,13 +7,13 @@ const options = {
         info: {
             title: "Project Management System API",
             version: "1.0.0",
-            description:
-                "Backend APIs for Project Management System",
+            description: "Backend APIs for Project Management System",
         },
 
         servers: [
             {
-                url: "http://localhost:5000",
+                url: process.env.API_URL || "http://localhost:5000",
+                description: "Development Server"
             },
         ],
 

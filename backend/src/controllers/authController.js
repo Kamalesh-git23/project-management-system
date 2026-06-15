@@ -25,7 +25,7 @@ export const register = asyncHandler(async (req, res) => {
     },
   });
 
-  const token = generateToken(user.id);
+  const token = generateToken(user.id, user.role);
 
   res.status(201).json({
     message: "User Registered Successfully",
@@ -56,7 +56,7 @@ export const login = asyncHandler(async (req, res) => {
     throw new AppError("Invalid Credentials", 401);
   }
 
-  const token = generateToken(user.id);
+  const token = generateToken(user.id, user.role);
 
   res.status(200).json({
     message: "Login Successful",

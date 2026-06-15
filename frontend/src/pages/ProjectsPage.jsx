@@ -1,51 +1,70 @@
-import React, {useContext} from 'react';
+import React, { useContext } from "react";
 
-import Layout from '../components/common/Layout';
+import Layout from "../components/common/Layout";
+import ProjectCard from "../components/projects/ProjectCard";
 
-import ProjectCard from '../components/projects/ProjectCard';
+import { ProjectContext } from "../context/ProjectContext";
 
-import { ProjectContext } from '../context/ProjectContext';
+import { useNavigate } from "react-router-dom";
 
-import { useNavigate } from 'react-router-dom';
-
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus } from "react-icons/fa";
 
 function ProjectsPage() {
+  const {
+    projects,
+    loading,
+    error,
+  } = useContext(ProjectContext);
 
-    const {projects} = useContext(ProjectContext);
+  const navigate =
+    useNavigate();
 
-    const navigate = useNavigate();
-    
-    return (
+  return (
+    <Layout
+      pageTitle="Projects Overview"
+      actionButton={
+        <button
+          onClick={() =>
+            navigate("/projects/create")
+          }
+        >
+          <FaPlus />
+          New Project
+        </button>
+      }
+    >
+      {loading && (
+        <h2>Loading Projects...</h2>
+      )}
 
-        <Layout pageTitle="Projects Overview" 
-                actionButton={
-                    <button onClick={() => navigate("/projects/create")}>
-                        <FaPlus/>
-                        New Project
-                    </button>
-                }>
+      {error && (
+        <h2>{error}</h2>
+      )}
 
+      {!loading && (
+        <div className="projects-grid">
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+              />
+            ))
+          ) : (
+            <div className="empty-state">
+              <h2>
+                No Projects Found
+              </h2>
 
-            <div className='projects-grid'>
-
-                {projects.length > 0 ? (
-                    projects.map(project => (
-                    <ProjectCard key={project.id}  project={project}/>
-                ))
-                ):(
-                    <div className="empty-state">
-                        <h2>No Projects Found</h2>
-
-                        <p>Create your first project.</p>
-                    </div>
-                )}
-
-                
+              <p>
+                Create your first
+                project.
+              </p>
             </div>
-                
-        </Layout>
-                
+          )}
+        </div>
+      )}
+    </Layout>
   );
 }
 

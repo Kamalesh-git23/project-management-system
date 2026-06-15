@@ -2,82 +2,95 @@ import prisma from "../config/prisma.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 
-export const uploadAttachment = async (req, res) => {
+import AppError from "../utils/AppError.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
+export const uploadAttachment = asyncHandler(
+  async (req, res) => {
     const taskId = Number(req.params.taskId);
 
     if (!req.file) {
-        return res.status(400).json({
-            message: "No file uploaded",
-        });
+      throw new AppError(
+        "No file uploaded",
+        400
+      );
     }
 
     const streamUpload = () =>
-        new Promise((resolve, reject) => {
-
-            const stream =
-                cloudinary.uploader.upload_stream(
-                    {
-                        folder: "project-management-system",
-                    },
-                    (error, result) => {
-
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
-                    }
-                );
-
-            streamifier.createReadStream(
-                req.file.buffer
-            ).pipe(stream);
-        });
-
-    const result = await streamUpload();
-
-    const attachment =
-        await prisma.attachment.create({
-            data: {
-                fileName: req.file.originalname,
-                fileUrl: result.secure_url,
-                publicId: result.public_id,
-                taskId,
+      new Promise((resolve, reject) => {
+        const stream =
+          cloudinary.uploader.upload_stream(
+            {
+              folder:
+                "project-management-system",
             },
-        });
+            (error, result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(error);
+              }
+            }
+          );
 
-    res.status(201).json(attachment);
-};
+        streamifier
+          .createReadStream(
+            req.file.buffer
+          )
+          .pipe(stream);
+      });
 
-export const deleteAttachment =
-async (req, res) => {
+    const result =
+      await streamUpload();
 
     const attachment =
-        await prisma.attachment.findUnique({
-            where:{
-                id:Number(req.params.id)
-            }
-        });
+      await prisma.attachment.create({
+        data: {
+          fileName:
+            req.file.originalname,
+          fileUrl:
+            result.secure_url,
+          publicId:
+            result.public_id,
+          taskId,
+        },
+      });
 
-    if(!attachment){
-        return res.status(404).json({
-            message:"Attachment not found"
-        });
+    res.status(201).json(
+      attachment
+    );
+  }
+);
+
+export const deleteAttachment = asyncHandler(
+  async (req, res) => {
+    const attachment =
+      await prisma.attachment.findUnique({
+        where: {
+          id: Number(req.params.id),
+        },
+      });
+
+    if (!attachment) {
+      throw new AppError(
+        "Attachment not found",
+        404
+      );
     }
 
     await cloudinary.uploader.destroy(
-        attachment.publicId
+      attachment.publicId
     );
 
     await prisma.attachment.delete({
-        where:{
-            id:attachment.id
-        }
+      where: {
+        id: attachment.id,
+      },
     });
 
     res.json({
-        message:
-            "Attachment deleted successfully"
+      message:
+        "Attachment deleted successfully",
     });
-};
+  }
+);
