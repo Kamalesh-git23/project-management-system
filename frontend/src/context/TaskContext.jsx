@@ -92,6 +92,32 @@ const removeAttachment = async (
   fetchTasks();
 };
 
+const createNote = async (
+  taskId,
+  content
+) => {
+
+  await taskService.addNote(
+    taskId,
+    content
+  );
+
+  fetchTasks();
+};
+
+const removeNote = async (
+  taskId,
+  noteId
+) => {
+
+  await taskService.deleteNote(
+    taskId,
+    noteId
+  );
+
+  fetchTasks();
+};
+
   return (
     <TaskContext.Provider
       value={{
@@ -103,6 +129,8 @@ const removeAttachment = async (
         moveTask,
         uploadTaskAttachment,
         removeAttachment,
+        createNote,
+        removeNote
       }}
     >
       {children}
