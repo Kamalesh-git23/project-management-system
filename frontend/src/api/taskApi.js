@@ -23,3 +23,16 @@ export const updateTaskState = (
     `/tasks/${id}/state`,
     { state }
   );
+
+export const addNote = (taskId, content) =>
+  api.post(`/tasks/${taskId}/notes`, {
+    content,
+  });
+
+export const deleteNote = (
+  taskId,
+  noteId
+) =>
+  api.delete(
+    `/tasks/${taskId}/notes/${noteId}`
+);

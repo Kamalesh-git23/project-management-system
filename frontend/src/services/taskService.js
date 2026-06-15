@@ -5,6 +5,8 @@ import {
   updateTask,
   deleteTask,
   updateTaskState,
+  addNote,
+  deleteNote
 } from "../api/taskApi";
 
 const taskService = {
@@ -14,6 +16,8 @@ const taskService = {
   updateTask,
   deleteTask,
   updateTaskState,
+  addNote,
+  deleteNote
 };
 
 export default taskService;
