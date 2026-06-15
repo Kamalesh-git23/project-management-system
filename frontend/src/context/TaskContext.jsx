@@ -1,51 +1,80 @@
-import React, { createContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useEffect,
+  useState,
+} from "react";
 
-export const TaskContext = createContext();
+import taskService from "../services/taskService";
 
-function TaskProvider({children}) {
+export const TaskContext =
+  createContext();
 
-    const [tasks,setTasks] = useState(()=>{
-      const savedTasks = localStorage.getItem("tasks");
+export default function TaskProvider({
+  children,
+}) {
+  const [tasks, setTasks] =
+    useState([]);
 
-      return savedTasks ? JSON.parse(savedTasks):[];
-    });
+  const fetchTasks =
+    async () => {
+      const res =
+        await taskService.getTasks();
 
-    useEffect(() => {
-      localStorage.setItem("tasks",JSON.stringify(tasks));
-    },[tasks]);
-
-
-    const addTask = (task) => {
-        setTasks(prev => [...prev,task]);
+      setTasks(res.data);
     };
 
-    const deleteTask = (id) =>{
-      setTasks(prev => prev.filter(task => task.id !== id));
-    };
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
-    const updateTask = (id,updatedTask) => {
-      setTasks(prev =>  prev.map(task => task.id === id ? updatedTask:task));
-    };
-
-    const moveTask = (taskId, newState) => {
-      setTasks(prev =>
-        prev.map(task =>
-          task.id === taskId ? {...task, state:newState} : task
-        )
+  const addTask =
+    async (taskData) => {
+      await taskService.createTask(
+        taskData
       );
+
+      fetchTasks();
+    };
+
+  const editTask =
+    async (id, taskData) => {
+      await taskService.updateTask(
+        id,
+        taskData
+      );
+
+      fetchTasks();
+    };
+
+  const removeTask =
+    async (id) => {
+      await taskService.deleteTask(id);
+
+      fetchTasks();
+    };
+
+  const moveTask =
+    async (id, state) => {
+      await taskService.updateTaskState(
+        id,
+        state
+      );
+
+      fetchTasks();
     };
 
   return (
     <TaskContext.Provider
-        value={{
-          tasks,
-          addTask,
-          deleteTask,
-          updateTask,
-          moveTask}}>
-        {children}
+      value={{
+        tasks,
+        fetchTasks,
+        addTask,
+        editTask,
+        removeTask,
+        moveTask,
+      }}
+    >
+      {children}
     </TaskContext.Provider>
   );
 }
-
-export default TaskProvider;
