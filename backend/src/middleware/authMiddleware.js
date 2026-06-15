@@ -1,16 +1,28 @@
 import jwt from "jsonwebtoken";
 
-export const authMiddleware = (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
+import AppError from "../utils/AppError.js";
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Authentication Required",
-      });
+export const authMiddleware = (
+  req,
+  res,
+  next
+) => {
+  try {
+    const authHeader =
+      req.headers.authorization;
+
+    if (
+      !authHeader ||
+      !authHeader.startsWith("Bearer ")
+    ) {
+      throw new AppError(
+        "Authentication Required",
+        401
+      );
     }
 
-    const token = authHeader.split(" ")[1];
+    const token =
+      authHeader.split(" ")[1];
 
     const decoded = jwt.verify(
       token,
@@ -21,8 +33,11 @@ export const authMiddleware = (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(401).json({
-      message: "Invalid or Expired Token",
-    });
+    next(
+      new AppError(
+        "Invalid or Expired Token",
+        401
+      )
+    );
   }
 };

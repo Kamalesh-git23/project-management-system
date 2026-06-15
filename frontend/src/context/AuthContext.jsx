@@ -1,76 +1,122 @@
-import { createContext, useState, useEffect } from "react";
-import { loginUser, registerUser, getProfile } from "../api/authApi";
+import {
+  createContext,
+  useState,
+  useEffect,
+} from "react";
 
-export const AuthContext = createContext();
+import authService from "../services/authService";
 
-export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+export const AuthContext =
+  createContext();
 
-  const [loading, setLoading] = useState(true);
+export default function AuthProvider({
+  children,
+}) {
+  const [user, setUser] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [
+    isAuthenticated,
+    setIsAuthenticated,
+  ] = useState(false);
 
   useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await getProfile();
-
-        setUser(res.data);
-      } catch {
-        localStorage.removeItem("token");
-      }
-
-      setLoading(false);
-    };
-
     loadUser();
   }, []);
 
-  const login = async (data) => {
-    const res = await loginUser(data);
+  const loadUser =
+    async () => {
+      try {
+        const token =
+          localStorage.getItem(
+            "token"
+          );
 
-    localStorage.setItem(
-      "token",
-      res.data.token
-    );
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
-    setUser(res.data.user);
+        const res =
+          await authService.getProfile();
 
-    return res.data;
-  };
+        setUser(res.data);
 
-  const register = async (data) => {
-    const res = await registerUser(data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error(error);
 
-    localStorage.setItem(
-      "token",
-      res.data.token
-    );
+        localStorage.removeItem(
+          "token"
+        );
 
-    setUser(res.data.user);
+        setUser(null);
 
-    return res.data;
-  };
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  const login =
+    async (data) => {
+      const res =
+        await authService.login(
+          data
+        );
+
+      localStorage.setItem(
+        "token",
+        res.data.token
+      );
+
+      await loadUser();
+
+      return res.data;
+    };
+
+  const register =
+    async (data) => {
+      const res =
+        await authService.register(
+          data
+        );
+
+      localStorage.setItem(
+        "token",
+        res.data.token
+      );
+
+      await loadUser();
+
+      return res.data;
+    };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    authService.logout();
+
+    localStorage.removeItem(
+      "token"
+    );
 
     setUser(null);
+
+    setIsAuthenticated(false);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        loading,
+        isAuthenticated,
         login,
         register,
         logout,
-        loading,
+        loadUser,
       }}
     >
       {children}

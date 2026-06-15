@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import projectService from "../services/projectService";
+import { useAuth } from "../hooks/useAuth";
 
 export const ProjectContext =
   createContext();
@@ -12,53 +13,98 @@ export const ProjectContext =
 export default function ProjectProvider({
   children,
 }) {
+  const { user } = useAuth();
+
   const [projects, setProjects] =
     useState([]);
 
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState(null);
+
   const fetchProjects =
     async () => {
-      const res =
-        await projectService.getProjects();
+      try {
+        setLoading(true);
 
-      setProjects(res.data);
+        const res =
+          await projectService.getProjects();
+
+        setProjects(res.data);
+
+        setError(null);
+      } catch (err) {
+        console.error(err);
+
+        setError(
+          err.response?.data?.message ||
+            "Failed to fetch projects"
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (user) {
+      fetchProjects();
+    }
+  }, [user]);
 
   const addProject =
     async (projectData) => {
-      await projectService.createProject(
-        projectData
-      );
+      const res =
+        await projectService.createProject(
+          projectData
+        );
 
-      fetchProjects();
+      setProjects((prev) => [
+        res.data,
+        ...prev,
+      ]);
+
+      return res.data;
     };
 
   const editProject =
     async (id, projectData) => {
-      await projectService.updateProject(
-        id,
-        projectData
+      const res =
+        await projectService.updateProject(
+          id,
+          projectData
+        );
+
+      setProjects((prev) =>
+        prev.map((project) =>
+          project.id === id
+            ? res.data
+            : project
+        )
       );
 
-      fetchProjects();
+      return res.data;
     };
 
   const removeProject =
     async (id) => {
-      await projectService.deleteProject(
-        id
-      );
+      await projectService.deleteProject(id);
 
-      fetchProjects();
+      setProjects((prev) =>
+        prev.filter(
+          (project) =>
+            project.id !== id
+        )
+      );
     };
 
   return (
     <ProjectContext.Provider
       value={{
         projects,
+        loading,
+        error,
         fetchProjects,
         addProject,
         editProject,

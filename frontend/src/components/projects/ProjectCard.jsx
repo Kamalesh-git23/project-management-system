@@ -1,80 +1,162 @@
-import React, {useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {
+  useState,
+  useContext,
+} from "react";
 
-import DeleteModal from '../common/DeleteModal';
+import { useNavigate } from "react-router-dom";
 
-import { ProjectContext } from '../../context/ProjectContext';
+import DeleteModal from "../common/DeleteModal";
 
-import { FaEdit,FaTrash } from 'react-icons/fa';
+import { ProjectContext } from "../../context/ProjectContext";
 
-function ProjectCard({project}) {
+import {
+  FaEdit,
+  FaTrash,
+} from "react-icons/fa";
 
-    const [showDeleteModal,setShowDeleteModal] = useState(false);
-    
-    const navigate = useNavigate();
+function ProjectCard({ project }) {
+  const [showDeleteModal,
+    setShowDeleteModal] =
+    useState(false);
 
-    const {deleteProject} = useContext(ProjectContext);
+  const navigate =
+    useNavigate();
 
-    const handleDeleteClick = (e) => {
-        e.stopPropagation();
+  const { removeProject } =
+    useContext(ProjectContext);
 
-        setShowDeleteModal(true);
+  const handleDeleteClick = (
+    e
+  ) => {
+    e.stopPropagation();
+
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete =
+    async () => {
+      try {
+        await removeProject(
+          project.id
+        );
+
+        setShowDeleteModal(
+          false
+        );
+      } catch (error) {
+        alert(
+          error.response?.data
+            ?.message ||
+            "Failed to delete project"
+        );
+      }
     };
 
-    const handleConfirmDelete =() => {
-        deleteProject(project.id);
-        setShowDeleteModal(false);
-    }
+  return (
+    <>
+      <div
+        className="project-card"
+        onClick={() =>
+          navigate(
+            `/projects/${project.id}`
+          )
+        }
+      >
+        <h3>{project.name}</h3>
 
-    return (
-        <>
-            <div className='project-card' onClick={()=> navigate(`/project/${project.id}`)}>
-                <h3>{project.name}</h3>
+        <p>
+          {project.description}
+        </p>
 
-                <p>{project.description}</p>
+        <p>
+          <strong>Type:</strong>{" "}
+          {project.type}
+        </p>
 
-                <p> <strong>Type:</strong> {project.type} </p>
+        <p>
+          <strong>
+            Priority:
+          </strong>{" "}
+          {project.priority}
+        </p>
 
-                <p> <strong>Priority:</strong> {project.priority} </p>
+        <p>
+          <strong>Status:</strong>{" "}
+          {project.status}
+        </p>
 
-                <p> <strong>Status:</strong> {project.status} </p>
+        <p>
+          <strong>
+            Start Date:
+          </strong>{" "}
+          {new Date(
+            project.startDate
+          ).toLocaleDateString(
+            "en-GB"
+          )}
+        </p>
 
-                <p> <strong>Start Date:</strong>{" "}
-                    {new Date(project.startDate).toLocaleDateString("en-GB")} 
-                </p>
+        <p>
+          <strong>
+            End Date:
+          </strong>{" "}
+          {new Date(
+            project.endDate
+          ).toLocaleDateString(
+            "en-GB"
+          )}
+        </p>
 
-                <p> <strong>End Date:</strong>{" "}
-                    {new Date(project.endDate).toLocaleDateString("en-GB")} 
-                </p>
+        <p>
+          <strong>Team:</strong>{" "}
+          {
+            project.teamMembers
+          }
+        </p>
 
-                <p> <strong>Team:</strong> {project.teamMembers} </p>
+        <div className="card-actions">
+          <button
+            className="icon-btn edit-btn"
+            onClick={(e) => {
+              e.stopPropagation();
 
-                <div className='card-actions'>
+              navigate(
+                `/projects/edit/${project.id}`
+              );
+            }}
+            title="Edit Project"
+          >
+            <FaEdit />
+          </button>
 
-                    <button className="icon-btn edit-btn"
-                            onClick={(e)=> {
-                                e.stopPropagation();
-                                navigate(`/projects/edit/${project.id}`);
-                            }}
-                            title="Edit Project"> 
-                        <FaEdit/>
-                    </button>
+          <button
+            className="icon-btn delete-btn"
+            onClick={
+              handleDeleteClick
+            }
+            title="Delete Project"
+          >
+            <FaTrash />
+          </button>
+        </div>
+      </div>
 
-                    <button className="icon-btn delete-btn"
-                            onClick={handleDeleteClick}
-                            title="Delete Project"> 
-                        <FaTrash/>
-                    </button>
-                </div>
-            </div>
-            <DeleteModal
-                isOpen={showDeleteModal}
-                title="Delete Project"
-                message={`Are you sure you want to delete "${project.name}"? This action cannot be undone.`}
-                onConfirm={handleConfirmDelete}
-                onCancel={() => setShowDeleteModal(false)}/>
-        </>
-
+      <DeleteModal
+        isOpen={
+          showDeleteModal
+        }
+        title="Delete Project"
+        message={`Are you sure you want to delete "${project.name}"?`}
+        onConfirm={
+          handleConfirmDelete
+        }
+        onCancel={() =>
+          setShowDeleteModal(
+            false
+          )
+        }
+      />
+    </>
   );
 }
 

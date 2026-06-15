@@ -48,7 +48,7 @@ const router = express.Router();
  *       201:
  *         description: User Registered Successfully
  *       400:
- *         description: User Already Exists
+ *         description: Validation Error or User Already Exists
  *       500:
  *         description: Internal Server Error
  */
@@ -99,21 +99,41 @@ router.post(
  * @swagger
  * /api/auth/profile:
  *   get:
- *     summary: Get User Profile
+ *     summary: Get logges in user Profile
  *     tags:
  *       - Authentication
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User Profile
+ *         description: User Profile Retrieved Successfully
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: User Not Found
  */
 router.get(
   "/profile",
   authMiddleware,
   getProfile
 );
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *      summary: Logout User
+ *      tags:
+ *        - Authentication
+ *      responses:
+ *        200:
+ *          description: Logout Successful
+*/
+router.post("/logout", (req, res) => {
+res.status(200).json({
+success: true,
+message: "Logout Successful",
+});
+});
 
 export default router;

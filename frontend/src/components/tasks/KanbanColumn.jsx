@@ -1,64 +1,106 @@
-import React from 'react'
-import { Droppable, Draggable } from '@hello-pangea/dnd';
-import TaskCard from './TaskCard';
-import { FaTasks } from 'react-icons/fa';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { MdOutlinePendingActions } from 'react-icons/md';
-import { BsCheckCircleFill } from 'react-icons/bs';
+import React from "react";
 
-function KanbanColumn({title,tasks}) {
+import {
+  Droppable,
+  Draggable,
+} from "@hello-pangea/dnd";
 
-  const getColumnIcon = () => {
-    switch(title){
-      case "Todo":
-        return <FaTasks/>;
-      
-      case "In Progress":
-        return <AiOutlineLoading3Quarters/>;
-      
-      case "Waiting":
-        return <MdOutlinePendingActions/>;
-      
-      case "Done":
-        return <BsCheckCircleFill/>;
+import TaskCard from "./TaskCard";
 
-      default:
-        return null;
-    }
-  };
+import { FaTasks } from "react-icons/fa";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { BsCheckCircleFill } from "react-icons/bs";
+
+function KanbanColumn({
+  title,
+  tasks,
+}) {
+  const getColumnIcon =
+    () => {
+      switch (title) {
+        case "Todo":
+          return <FaTasks />;
+
+        case "In Progress":
+          return (
+            <AiOutlineLoading3Quarters />
+          );
+
+        case "Waiting":
+          return (
+            <MdOutlinePendingActions />
+          );
+
+        case "Done":
+          return (
+            <BsCheckCircleFill />
+          );
+
+        default:
+          return null;
+      }
+    };
 
   return (
-    <Droppable droppableId={title}>
-
+    <Droppable
+      droppableId={title}
+    >
       {(provided) => (
         <div
-          className='kanban-column'
-          ref={provided.innerRef}
-          {...provided.droppableProps}>
+          className="kanban-column"
+          ref={
+            provided.innerRef
+          }
+          {...provided.droppableProps}
+        >
+          <h2>
+            {getColumnIcon()}
+            {title}
+          </h2>
 
-          <h2> {getColumnIcon()} {title}</h2>
+          {tasks.length ===
+            0 && (
+            <p>
+              No Tasks
+            </p>
+          )}
 
           {tasks.map(
-            (task,index) => (
+            (
+              task,
+              index
+            ) => (
               <Draggable
-                key={task.id}
-                draggableId={String(task.id)}
-                index={index}>
-
-                  {(provided) => (
-                    <TaskCard task={task} provided={provided}/>
-                  )}
-
+                key={
+                  task.id
+                }
+                draggableId={String(
+                  task.id
+                )}
+                index={index}
+              >
+                {(
+                  provided
+                ) => (
+                  <TaskCard
+                    task={
+                      task
+                    }
+                    provided={
+                      provided
+                    }
+                  />
+                )}
               </Draggable>
             )
           )}
 
-          {provided.placeholder}
-
+          {
+            provided.placeholder
+          }
         </div>
-
       )}
-
     </Droppable>
   );
 }

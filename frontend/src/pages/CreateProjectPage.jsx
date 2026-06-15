@@ -1,83 +1,120 @@
-import React, {useState,useContext} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {
+  useState,
+  useContext,
+} from "react";
 
-import Layout from '../components/common/Layout';
-import ProjectForm from '../components/projects/ProjectForm';
+import {
+  useNavigate,
+} from "react-router-dom";
 
-import { ProjectContext } from '../context/ProjectContext';
+import Layout from "../components/common/Layout";
 
-import { FaSave } from 'react-icons/fa';
+import ProjectForm from "../components/projects/ProjectForm";
+
+import {
+  ProjectContext,
+} from "../context/ProjectContext";
+
+import { FaSave } from "react-icons/fa";
 
 function CreateProjectPage() {
+  const navigate =
+    useNavigate();
 
-    const navigate = useNavigate();
+  const { addProject } =
+    useContext(ProjectContext);
 
-    const {addProject} = useContext(ProjectContext);
-
-    const [formData, setFormData] = useState({
-        name:"",
-        description:"",
-        type:"",
-        startDate:"",
-        endDate:"",
-        priority:"",
-        teamMembers:"",
-        status:"",
+  const [formData,
+    setFormData] =
+    useState({
+      name: "",
+      description: "",
+      type: "",
+      startDate: "",
+      endDate: "",
+      priority: "",
+      teamMembers: "",
+      status: "",
     });
 
-    const isFormValid = 
-        formData.name.trim() &&
-        formData.description.trim() && 
-        formData.type.trim() &&
-        formData.startDate &&
-        formData.endDate &&
-        formData.priority &&
-        formData.teamMembers.trim() &&
-        formData.status;
+  const isFormValid =
+    formData.name.trim() &&
+    formData.description.trim() &&
+    formData.type.trim() &&
+    formData.startDate &&
+    formData.endDate &&
+    formData.priority &&
+    formData.teamMembers.trim() &&
+    formData.status;
 
-    const handleCreateProject =() =>{
-        if(!isFormValid) return;
+  const handleCreateProject =
+    async () => {
+      if (!isFormValid)
+        return;
 
-        addProject({
-            id:Date.now(),
-            ...formData
-        });
+      try {
+        await addProject(
+          formData
+        );
 
-        navigate("/");
+        navigate(
+          "/projects"
+        );
+      } catch (error) {
+        alert(
+          error.response?.data
+            ?.message ||
+            "Failed to create project"
+        );
+      }
     };
 
-
   return (
-    <Layout pageTitle="New Project"
-            actionButton={
-                <button disabled={!isFormValid} onClick={handleCreateProject} >
-                    <FaSave/>
-                    Save Project
-                </button>
-            }>
+    <Layout
+      pageTitle="New Project"
+      actionButton={
+        <button
+          disabled={!isFormValid}
+          onClick={
+            handleCreateProject
+          }
+        >
+          <FaSave />
+          Save Project
+        </button>
+      }
+    >
+      <ProjectForm
+        formData={formData}
+        setFormData={setFormData}
+      />
 
-        <ProjectForm
-            formData={formData}
-            setFormData={setFormData}/>
+      <div className="form-actions">
+        <button
+          type="button"
+          className="cancel-btn"
+          onClick={() =>
+            navigate(
+              "/projects"
+            )
+          }
+        >
+          Cancel
+        </button>
 
-        <div className='form-actions'>
-            <button type='button' 
-                    className='cancel-btn' 
-                    onClick={() => navigate("/")}>
-                cancel
-            </button>
-
-            <button type='button' 
-                    disabled={!isFormValid} 
-                    onClick={handleCreateProject} >
-                <FaSave/>
-                Save project
-            </button>
-        </div>
-
+        <button
+          type="button"
+          disabled={!isFormValid}
+          onClick={
+            handleCreateProject
+          }
+        >
+          <FaSave />
+          Save Project
+        </button>
+      </div>
     </Layout>
   );
 }
 
 export default CreateProjectPage;
-
