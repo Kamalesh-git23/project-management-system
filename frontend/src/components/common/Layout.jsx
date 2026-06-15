@@ -18,7 +18,7 @@ function Layout({
       <div className="layout">
         <Sidebar />
 
-        <main className="content">
+        <main className="content" style={{marginTop:"70px"}}>
           {children}
         </main>
       </div>

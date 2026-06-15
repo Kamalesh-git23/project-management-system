@@ -1,8 +1,13 @@
 import React from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../hooks/useAuth";
 
-import { useNavigate } from "react-router-dom";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 function Navbar({
   pageTitle,
@@ -19,7 +24,6 @@ function Navbar({
   const handleLogout =
     () => {
       logout();
-
       navigate("/login");
     };
 
@@ -32,17 +36,24 @@ function Navbar({
       <div className="navbar-right">
         {actionButton}
 
-        <div className="user-info">
-          <span>
-            {user?.name}
-          </span>
+        <div className="profile-card">
+          <FaUserCircle className="profile-icon" />
+
+          <div className="profile-info">
+            <span className="profile-name">
+              {user?.name}
+            </span>
+
+            <span className="profile-email">
+              {user?.email}
+            </span>
+          </div>
 
           <button
             className="logout-btn"
-            onClick={
-              handleLogout
-            }
+            onClick={handleLogout}
           >
+            <FaSignOutAlt />
             Logout
           </button>
         </div>
