@@ -9,9 +9,8 @@ import attachmentRoutes from "./routes/attachmentRoutes.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 
-
 import swaggerUi from "swagger-ui-express";
-import specs from "./config/swagger.js";
+import swaggerSpec from "./config/swagger.js";
 
 dotenv.config();
 
@@ -32,7 +31,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/attachments", attachmentRoutes);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(errorHandler);
 

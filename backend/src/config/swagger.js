@@ -1,35 +1,44 @@
-import { type } from "os";
-import { title } from "process";
-import swaggerJSDoc from "swagger-jsdoc";
+import swaggerJsDoc from "swagger-jsdoc";
 
 const options = {
-    definition:{
+    definition: {
         openapi: "3.0.0",
-        info:{
-            title:"Project Management API",
+
+        info: {
+            title: "Project Management System API",
             version: "1.0.0",
-            description: "Backend API for Project Management System"
+            description:
+                "Backend APIs for Project Management System",
         },
-        servers:[
+
+        servers: [
             {
-                url:"http://localhost:5000"
-            }
+                url: "http://localhost:5000",
+            },
         ],
-        components:{
-            securitySchemes:{
-                bearerAuth:{
-                    type:"http",
-                    scheme:"bearer",
-                    bearerFormat:"JWT"
-                }
-            }
-        }
+
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
+
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
-    apis:[
-        "./src/routes/*.js"
-    ]
+
+    apis: [
+        "./src/routes/*.js",
+    ],
 };
 
-const specs = swaggerJSDoc(options);
+const swaggerSpec = swaggerJsDoc(options);
 
-export default specs;
+export default swaggerSpec;
