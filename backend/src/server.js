@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
+import attachmentRoutes from "./routes/attachmentRoutes.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -29,7 +30,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
-
+app.use("/api/attachments", attachmentRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
