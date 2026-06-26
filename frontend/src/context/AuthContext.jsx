@@ -107,6 +107,22 @@ export default function AuthProvider({
     setIsAuthenticated(false);
   };
 
+  const updateProfile = async (data) => {
+    const res =
+      await authService.updateProfile(data);
+
+    setUser(res.data.user);
+
+    return res.data;
+  };
+
+  const changePassword = async (data) => {
+    const res =
+      await authService.changePassword(data);
+
+    return res.data;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -117,8 +133,10 @@ export default function AuthProvider({
         register,
         logout,
         loadUser,
+        updateProfile,
+        changePassword,
       }}
-    >
+      >
       {children}
     </AuthContext.Provider>
   );

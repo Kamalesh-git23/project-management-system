@@ -8,6 +8,10 @@ import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import attachmentRoutes from "./routes/attachmentRoutes.js";
+import auditRoutes from "./routes/auditRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+
 
 import swaggerSpec from "./config/swagger.js";
 
@@ -45,6 +49,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/attachments", attachmentRoutes);
+app.use("/api/audits", auditRoutes);
+app.use(
+  "/api/profile",
+  profileRoutes
+);
+app.use("/api/users",userRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

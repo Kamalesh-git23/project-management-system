@@ -7,89 +7,169 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id        Int     @id @default(autoincrement())
+model User {
+  id Int @id @default(autoincrement())
 
-  name      String
-  email     String  @unique
-  password  String
-  
-  role      String  @default("USER")
+  firstName String
+  lastName  String
 
-  projects  Project[]
+  email    String @unique
+  password String
+
+  image       String?
+  description String?
+
+  enum UserRole {
+    USER
+    ADMIN
+  }
+
+  role UserRole @default("USER")
+
+  ownedProjects Project[] @relation("ProjectOwner")
+
+  sharedProjects ProjectMember[]
+
+  auditLogs AuditLog[]
+
+  resetTokens PasswordResetToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Project {
-  id          Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   name        String
   description String
   type        String
 
-  startDate   DateTime
-  endDate     DateTime
+  enum ProjectMode {
+    MY_PROJECT
+    SHARED_PROJECT
+  }
 
-  priority    String
-  status      String
+  projectMode ProjectMode @default(MY_PROJECT)
+
+  startDate DateTime
+  endDate   DateTime
+
+  priority String
+  status   String
 
   teamMembers String
 
-  ownerId     Int
-  owner       User @relation(fields: [ownerId], references:[id], onDelete: Cascade)
+  ownerId Int
+  owner   User @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  tasks       Task[]
+  members ProjectMember[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  tasks Task[]
+
+  auditLogs AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Task{
-  id          Int @id @default(autoincrement())
+model ProjectMember {
+  id Int @id @default(autoincrement())
+
+  projectId Int
+  userId    Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, userId])
+}
+
+model Task {
+  id Int @id @default(autoincrement())
 
   title       String
   description String
 
-  type        String
-  priority    String
-  state       String
+  type String
 
-  dueDate     DateTime
-  dueTime     String
+  priority String
+  state    String
 
-  projectId   Int
-  project     Project @relation(fields: [projectId], references:[id], onDelete: Cascade)
+  dueDate DateTime
+  dueTime String
 
-  notes       Note[]
+  projectId Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  notes Note[]
 
   attachments Attachment[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Note{
-  id          Int @id @default(autoincrement())
+model Note {
+  id Int @id @default(autoincrement())
 
-  content     String
+  content String
 
-  taskId      Int
-  task        Task @relation(fields:[taskId], references: [id], onDelete: Cascade)
+  taskId Int
 
-  createdAt   DateTime @default(now())
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  createdBy Int
+  user User @relation(fields: [createdBy], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 model Attachment {
-  id          Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  fileName    String
-  fileUrl     String
-  publicId    String
+  fileName String
+  fileUrl  String
+  publicId String
 
-  taskId      Int
-  task        Task @relation(fields:[taskId], references: [id], onDelete: Cascade)
+  taskId Int
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id Int @id @default(autoincrement())
+
+  userId Int
+
+  projectId Int?
+
+  action  String
+  details String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id Int @id @default(autoincrement())
+
+  token String @unique
+
+  userId Int
+
+  expiresAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }

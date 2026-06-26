@@ -1,23 +1,52 @@
 import { z } from "zod";
 
-export const projectSchema = z.object({
-  name: z.string().trim()
-      .min(3, "Project name must be atleast 3 characters")
-      .max(100, "Project name cannot exceed 100 characters"),
+export const projectSchema =
+  z.object({
+    name: z.string()
+      .trim()
+      .min(3),
 
-  description: z.string().trim()
-      .min( 10, "Description must be at least 10 characters")
-      .max( 1000, "Description cannot exceed 1000 characters"),
+    description: z.string()
+      .trim()
+      .min(10),
 
-  type: z.string().trim().min(1, "Project type is required"),
+    type: z.string()
+      .trim()
+      .min(1),
 
-  startDate: z.string(),
+    startDate:
+      z.string(),
 
-  endDate: z.string(),
+    endDate:
+      z.string(),
 
-  priority: z.enum([ "High", "Medium", "Low",]),
+    priority:
+      z.enum([
+        "High",
+        "Medium",
+        "Low",
+      ]),
 
-  teamMembers: z.string().trim().min( 1, "Team members are required"),
+    teamMembers:
+      z.string(),
 
-  status: z.enum([ "Active", "Completed", "On Hold",]),
-});
+    status:
+      z.enum([
+        "Active",
+        "Completed",
+        "On Hold",
+      ]),
+
+    projectMode:
+      z.enum([
+        "MY_PROJECT",
+        "SHARED_PROJECT",
+      ])
+      .optional(),
+
+    sharedUsers:
+      z.array(
+        z.number()
+      )
+      .optional(),
+  });

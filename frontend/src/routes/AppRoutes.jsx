@@ -9,6 +9,9 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 
 import RegisterPage from "../pages/RegisterPage";
 import LoginPage from "../pages/LoginPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+
+import ProfilePage from "../pages/ProfilePage";
 
 import ProjectsPage from "../pages/ProjectsPage";
 import CreateProjectPage from "../pages/CreateProjectPage";
@@ -25,7 +28,8 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
-        {/* Redirect Root */}
+        {/* Root Redirect */}
+
         <Route
           path="/"
           element={
@@ -37,17 +41,33 @@ function AppRoutes() {
         />
 
         {/* Public Routes */}
-        <Route
-          path="/register"
-          element={<RegisterPage />}
-        />
 
         <Route
           path="/login"
           element={<LoginPage />}
         />
 
-        {/* Projects */}
+        <Route
+          path="/register"
+          element={<RegisterPage />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPasswordPage />}
+        />
+
+        {/* Protected Routes */}
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/projects"
           element={
@@ -84,7 +104,6 @@ function AppRoutes() {
           }
         />
 
-        {/* Tasks */}
         <Route
           path="/tasks"
           element={
@@ -113,6 +132,7 @@ function AppRoutes() {
         />
 
         {/* 404 */}
+
         <Route
           path="*"
           element={

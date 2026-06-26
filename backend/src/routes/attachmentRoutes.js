@@ -17,6 +17,13 @@ router.use(authMiddleware);
 
 /**
  * @swagger
+ * tags:
+ *   name: Attachments
+ *   description: Task Attachment Management
+ */
+
+/**
+ * @swagger
  * /api/attachments/upload/{taskId}:
  *   post:
  *     summary: Upload attachment to a task
@@ -28,9 +35,9 @@ router.use(authMiddleware);
  *       - in: path
  *         name: taskId
  *         required: true
- *         description: Task ID
  *         schema:
  *           type: integer
+ *         description: Task ID
  *     requestBody:
  *       required: true
  *       content:
@@ -45,15 +52,13 @@ router.use(authMiddleware);
  *                 format: binary
  *     responses:
  *       201:
- *         description: File Uploaded Successfully
+ *         description: Attachment uploaded successfully
  *       400:
- *         description: No File Uploaded or Invalid File
+ *         description: Invalid file or no file uploaded
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Task Not Found
- *       500:
- *         description: Internal Server Error
+ *         description: Task not found
  */
 router.post(
   "/upload/:taskId",
@@ -74,18 +79,18 @@ router.post(
  *       - in: path
  *         name: id
  *         required: true
- *         description: Attachment ID
  *         schema:
  *           type: integer
+ *         description: Attachment ID
  *     responses:
  *       200:
- *         description: Attachment Deleted Successfully
+ *         description: Attachment deleted successfully
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Access denied
  *       404:
- *         description: Attachment Not Found
- *       500:
- *         description: Internal Server Error
+ *         description: Attachment not found
  */
 router.delete(
   "/:id",
